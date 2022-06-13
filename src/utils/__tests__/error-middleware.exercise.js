@@ -1,16 +1,37 @@
-// Testing Middleware
+import { UnauthorizedError } from 'express-jwt'
+import errorMiddleware from '../error-middleware'
 
-// 💣 remove this todo test (it's only here so you don't get an error about missing tests)
-test.todo('remove me')
 
-// 🐨 you'll need both of these:
-// import {UnauthorizedError} from 'express-jwt'
-// import errorMiddleware from '../error-middleware'
+describe('Test of errorMiddleware function', () => {
+    it('Should return 401 when UnauthorizedError happens', () => {
+        const error = new UnauthorizedError('Error', {message: 'Some error message'})
+        const req = { }
+        const res = { json: jest.fn(() => res), status: jest.fn(() => res) }
+        const next = jest.fn()
+        errorMiddleware(error, req, res, next)
+        expect(res.json).toHaveBeenCalledWith({ "code": "Error", "message": "Some error message" })
+        expect(res.json).toHaveBeenCalledTimes(1)
+        expect(res.status).toHaveBeenCalledTimes(1)
+    })
 
-// 🐨 Write a test for the UnauthorizedError case
-// 💰 const error = new UnauthorizedError('some_error_code', {message: 'Some message'})
-// 💰 const res = {json: jest.fn(() => res), status: jest.fn(() => res)}
+    it('Should pass middleware to next when headers already been sent', () => {
+        const next = jest.fn()
+        const req = { }
+        const res = { headersSent: true }
+        errorMiddleware(null, req, res, next)
+        expect(next).toHaveBeenCalledTimes(1)
+    })
 
-// 🐨 Write a test for the headersSent case
-
-// 🐨 Write a test for the else case (responds with a 500)
+    it('Should fall in fallback', () => {
+        const error = {
+            message: 'Internal server error',
+            stack: new Error().stack
+        }
+        const req = { }
+        const res = { headersSent: false, status: jest.fn(), json: jest.fn() }
+        const next = jest.fn()
+        errorMiddleware(error, req, res, next)
+        expect(res.status).toHaveBeenCalledWith(500)
+        expect(res.status).toHaveBeenCalledTimes(1)
+    })
+})
