@@ -1,21 +1,38 @@
-// Testing Pure Functions
+import { isPasswordAllowed } from '../auth'
 
-// 💣 remove this todo test (it's only here so you don't get an error about missing tests)
-test.todo('remove me')
-
-// 🐨 import the function that we're testing
-// 💰 import {isPasswordAllowed} from '../auth'
-
-// 🐨 write tests for valid and invalid passwords
-// 💰 here are some you can use:
-//
-// valid:
-// - !aBc123
-//
-// invalid:
-// - a2c! // too short
-// - 123456! // no alphabet characters
-// - ABCdef! // no numbers
-// - abc123! // no uppercase letters
-// - ABC123! // no lowercase letters
-// - ABCdef123 // no non-alphanumeric characters
+describe('Tests of is isPasswordAllowed', () => {
+    it('Should be a valid password.', () => {
+        const return1 = isPasswordAllowed('!aBc123');
+        expect(return1).toBeTruthy()
+    })
+    
+    it('Should be a invalid password because of length minor than six.', () => {
+        const return1 = isPasswordAllowed('a2c!');
+        expect(return1).toBeFalsy()
+    })
+    
+    it('Should be a invalid password because has not letter.', () => {
+        const return1 = isPasswordAllowed('123456!');
+        expect(return1).toBeFalsy()
+    })
+    
+    it('Should be a invalid password because has no digit in it.', () => {
+        const return1 = isPasswordAllowed('ABCdef!');
+        expect(return1).toBeFalsy()
+    })
+    
+    it('Should be a invalid password because has no capital letter in it.', () => {
+        const return1 = isPasswordAllowed('abc123!');
+        expect(return1).toBeFalsy()
+    })
+    
+    it('Should be a invalid password because has no lowercase letter in it.', () => {
+        const return1 = isPasswordAllowed('ABC123!');
+        expect(return1).toBeFalsy()
+    })
+    
+    it('Should be a invalid password because has no symbol in it.', () => {
+        const return1 = isPasswordAllowed('ABCdef123');
+        expect(return1).toBeFalsy()
+    })    
+})
